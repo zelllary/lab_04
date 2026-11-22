@@ -4,10 +4,11 @@ from pathlib import Path
 import pytest
 
 from algorithms.benchmark import benchmark_sort, measure_sort, run_benchmarks
+from algorithms.sorting import insertion_sort
 
 
-def test_measure_and_repeats() -> None:
-    """Тест замеров, повторов, копирования списка и ошибки числа повторов"""
+def test_measure_sort() -> None:
+    """Тест замера времени и сохранения исходного списка"""
 
     mas: list[int | float] = [3, 1.5, 2]
     received: list[list[int | float]] = []
@@ -24,6 +25,20 @@ def test_measure_and_repeats() -> None:
     assert received == [[3, 1.5, 2]]
     assert mas == [3, 1.5, 2]
 
+
+def test_benchmark_sort_repeats() -> None:
+    """Тест числа запусков и одинакового входа в каждом повторе"""
+
+    mas: list[int | float] = [3, 1.5, 2]
+    received: list[list[int | float]] = []
+
+    def sort_for_test(data: list[int | float]) -> list[int | float]:
+        """Запоминает вход и сортирует его на месте"""
+
+        received.append(data.copy())
+        data.sort()
+        return data
+
     for repeats in (5, 7):
         received.clear()
         times = benchmark_sort(sort_for_test, mas, repeats)
@@ -33,10 +48,13 @@ def test_measure_and_repeats() -> None:
         assert received == [[3, 1.5, 2]] * repeats
         assert mas == [3, 1.5, 2]
 
-    with pytest.raises(ValueError):
-        benchmark_sort(sort_for_test, mas, repeats=4)
 
-    assert len(received) == 7
+def test_benchmark_sort_invalid_repeats() -> None:
+    """Тест ошибки при числе повторов меньше пяти"""
+
+    mas: list[int | float] = [3, 1.5, 2]
+    with pytest.raises(ValueError):
+        benchmark_sort(insertion_sort, mas, repeats=4)
 
 
 def test_run_benchmarks_csv(tmp_path: Path) -> None:

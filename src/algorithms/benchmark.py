@@ -83,3 +83,48 @@ def run_benchmarks(sizes: tuple[int, ...], seed: int = 42, file_name: str = "out
                         writer.writerow([sort_name, dataset_name, size, repeat, seconds])
 
 
+def create_report(file_name: str, report_name: str = "benchmark_report.md") -> None:
+    """Создание отчёта по замерам"""
+
+    results: dict[tuple[str, str, int], list[float]] = {}
+
+    # читаем замеры из csv
+    with open(file_name, newline="", encoding="utf-8") as file:
+        for row in csv.DictReader(file):
+            # собираем повторы одной сортировки, набора и размера
+            key = (row["sorting"], row["dataset"], int(row["size"]))
+            if key not in results:
+                results[key] = []
+            results[key].append(float(row["seconds"]))
+
+    with open(report_name, "w", encoding="utf-8") as file:
+        # записываем заголовок таблицы
+        file.write("# Benchmark\n\n")
+        file.write("| sorting | dataset | size | repeats | average_seconds | growth |\n")
+        file.write("| --- | --- | ---: | ---: | ---: | ---: |\n")
+
+        last_group = ("", "")
+        last_time = 0.0
+
+        # идем по сортировкам и наборам, размеры по возрастанию
+        for key in sorted(results):
+            sort_name, dataset, size = key
+            times = results[key]
+            # считаем среднее время повторов
+            average = sum(times) / len(times)
+            group = (sort_name, dataset)
+
+            # сравниваем с предыдущим размером того же набора
+            growth = "-"
+            if group == last_group and last_time > 0:
+                growth = str(round(average / last_time, 2))
+
+            # записываем строку отчета
+            file.write(
+                f"| {sort_name} | {dataset} | {size} | {len(times)} | "
+                f"{round(average, 6)} | {growth} |\n"
+            )
+            last_group = group
+            last_time = average
+
+

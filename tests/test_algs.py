@@ -16,7 +16,7 @@ def test_nested_structures_recursion() -> None:
         [1, 2, 3, "a", 5, 4, 0],
     )
 
-def test_nested_structures_recursion_destroy() -> None:
+def test_nested_structures_recursion_invalid_types() -> None:
     """Тест обход вложенной структуры рекурсивно
       с неизвестным типом входных данных"""
 
@@ -41,7 +41,7 @@ def test_nested_structures_iterative() -> None:
         [1, 2, 3, "a", 5, 4, 0],
     )
 
-def test_nested_structures_iterative_destroy() -> None:
+def test_nested_structures_iterative_invalid_types() -> None:
     """Тест обход вложенной структуры итеративно
       с неизвестным типом входных данных"""
 

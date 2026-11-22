@@ -1,5 +1,5 @@
 from algorithms.algs import nested_structures_iterative, nested_structures_recursion
-from algorithms.benchmark import run_benchmarks
+from algorithms.benchmark import create_report, run_benchmarks
 from algorithms.generators import (
     generate_duplicates,
     generate_nearly_sorted,
@@ -53,6 +53,11 @@ def main() -> None:
     print("\nЗамеры для размеров:", sizes)
     run_benchmarks(sizes, seed, file_name)
     print("Результаты в", file_name)
+
+    # создаем отчет по csv
+    report_name = "benchmark_report.md"
+    create_report(file_name, report_name)
+    print("Отчёт в", report_name)
 
 
 if __name__ == "__main__":
